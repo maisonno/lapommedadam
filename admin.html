@@ -286,9 +286,10 @@ async function saveAll(){
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Sauvegarde…';
   setStatus('Sauvegarde en cours…');
   try{
-    await Promise.all([apiPut('events',eventsToCSV(),eventSha),apiPut('horaires',JSON.stringify(periodes,null,2),horSha)]);
-    const [ev,hor]=await Promise.all([apiGet('events'),apiGet('horaires')]);
-    eventSha=ev.sha; horSha=hor.sha; dirty=false;
+    const [evRes,horRes]=await Promise.all([apiPut('events',eventsToCSV(),eventSha),apiPut('horaires',JSON.stringify(periodes,null,2),horSha)]);
+    if(evRes.sha) eventSha=evRes.sha;
+    if(horRes.sha) horSha=horRes.sha;
+    dirty=false;
     setStatus('Sauvegardé ✓ · Déploiement dans ~30s');
     toast('✅ Sauvegardé ! Site mis à jour dans ~30s','success');
     setTimeout(()=>setStatus('Synchronisé ✓'),10000);
