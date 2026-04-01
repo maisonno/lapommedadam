@@ -53,18 +53,30 @@ export default async function handler(req, res) {
       ...(currentSha ? { sha: currentSha } : {}),
     };
 
-    const putR = await fetch(API_BASE, {
-      method: 'PUT',
-      headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    // Retry jusqu'à 3 fois en cas de conflit SHA
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        // Re-fetch le SHA frais avant retry
+        const rGet = await fetch(API_BASE, { headers });
+        if (rGet.ok) { const d = await rGet.json(); body.sha = d.sha; }
+      }
 
-    if (!putR.ok) {
+      const putR = await fetch(API_BASE, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (putR.ok) {
+        const result = await putR.json();
+        return res.status(200).json({ ok: true, sha: result.content?.sha || null });
+      }
+
       const err = await putR.json();
+      // 409 ou 422 = conflit SHA → on retry
+      if ((putR.status === 409 || putR.status === 422) && attempt < 2) continue;
       return res.status(putR.status).json({ error: err.message });
     }
-    const result = await putR.json();
-    return res.status(200).json({ ok: true, sha: result.content?.sha || null });
   }
 
   return res.status(405).json({ error: 'Méthode non supportée' });
