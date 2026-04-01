@@ -1,0 +1,14 @@
+[
+  {
+    "label": "Saison 2025",
+    "dateDebut": "2025-04-15",
+    "dateFin": "2025-10-15",
+    "note": "",
+    "jours": [1, 2, 3, 4, 5, 6, 0],
+    "services": [
+      { "nom": "Buffet petit-déjeuner", "debut": "08:00", "fin": "12:00" },
+      { "nom": "Déjeuner", "debut": "12:00", "fin": "14:00" },
+      { "nom": "Dîner", "debut": "19:00", "fin": "22:00" }
+    ]
+  }
+]

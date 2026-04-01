@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · La Pomme d'Adam</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --or: #f0c040; --or-dim: rgba(240,192,64,0.15);
+  --rouge: #c0392b; --vert: #27ae60;
+  --noir: #0a0a0a; --surface: #161616; --surface2: #202020;
+  --border: #2a2a2a; --text: #e8e8e8; --text-dim: #777; --radius: 12px;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--noir); color: var(--text); min-height: 100svh; padding-bottom: env(safe-area-inset-bottom); }
+.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+.header-title { font-size: 1rem; font-weight: 800; color: var(--or); }
+.header-sub { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.1rem; }
+.save-btn { background: var(--vert); color: white; border: none; border-radius: 8px; padding: 0.55rem 1rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+.save-btn:disabled { opacity: 0.5; }
+.tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); }
+.tab { flex: 1; padding: 0.85rem 1rem; text-align: center; font-size: 0.82rem; font-weight: 700; color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s; }
+.tab.active { color: var(--or); border-bottom-color: var(--or); }
+.main { padding: 1rem; max-width: 600px; margin: 0 auto; }
+.panel { display: none; }
+.panel.active { display: block; }
+.section-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+.section-hd h2 { font-size: 0.9rem; font-weight: 800; color: white; }
+.btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.5rem 0.9rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: opacity 0.15s, transform 0.1s; }
+.btn:active { transform: scale(0.96); }
+.btn-or { background: var(--or); color: #000; }
+.btn-rouge { background: var(--rouge); color: #fff; }
+.btn-ghost { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+.btn-sm { padding: 0.35rem 0.65rem; font-size: 0.74rem; }
+.events-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+.event-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.85rem 1rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+.event-item-date { font-size: 0.72rem; font-weight: 800; color: var(--or); white-space: nowrap; min-width: 72px; }
+.event-item-body { flex: 1; min-width: 0; }
+.event-item-titre { font-size: 0.88rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.event-item-meta { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.15rem; }
+.event-item-del { background: none; border: none; color: var(--text-dim); font-size: 1.1rem; cursor: pointer; padding: 0.25rem; flex-shrink: 0; }
+.empty { text-align: center; padding: 2rem 1rem; color: var(--text-dim); font-size: 0.82rem; }
+.form { display: flex; flex-direction: column; gap: 0.75rem; }
+.fg { display: flex; flex-direction: column; gap: 0.3rem; }
+.fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+label { font-size: 0.68rem; font-weight: 700; color: var(--text-dim); letter-spacing: 0.06em; text-transform: uppercase; }
+input, textarea { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 0.65rem 0.75rem; font-size: 0.88rem; font-family: inherit; width: 100%; -webkit-appearance: none; }
+input:focus, textarea:focus { outline: none; border-color: var(--or); }
+textarea { resize: vertical; min-height: 80px; }
+.periode { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 0.75rem; }
+.periode.active-p { border-color: rgba(240,192,64,0.4); }
+.periode-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; }
+.badge-active { background: var(--or-dim); border: 1px solid rgba(240,192,64,0.4); border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.68rem; font-weight: 800; color: var(--or); }
+.badge-inactive { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.68rem; font-weight: 700; color: var(--text-dim); }
+.sep { height: 1px; background: var(--border); margin: 0.85rem 0; }
+.jours-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 0.3rem; margin: 0.4rem 0 0.85rem; }
+.jour-tog { text-align: center; padding: 0.4rem 0.1rem; border-radius: 6px; background: var(--surface2); border: 1px solid var(--border); font-size: 0.62rem; font-weight: 800; cursor: pointer; color: var(--text-dim); user-select: none; }
+.jour-tog.on { background: var(--or-dim); border-color: rgba(240,192,64,0.5); color: var(--or); }
+.services { display: flex; flex-direction: column; gap: 0.5rem; }
+.service-row { display: grid; grid-template-columns: 1fr auto auto; gap: 0.4rem; align-items: center; }
+.time-range { display: flex; align-items: center; gap: 0.25rem; }
+.time-range input { padding: 0.5rem 0.4rem; font-size: 0.8rem; }
+.time-sep { color: var(--text-dim); font-size: 0.75rem; flex-shrink: 0; }
+.sheet-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.sheet-backdrop.open { opacity: 1; pointer-events: all; }
+.sheet { background: var(--surface); border-radius: 18px 18px 0 0; border-top: 1px solid var(--border); width: 100%; max-width: 600px; max-height: 90svh; overflow-y: auto; padding: 0 1.25rem calc(1.5rem + env(safe-area-inset-bottom)); transform: translateY(20px); transition: transform 0.25s; }
+.sheet-backdrop.open .sheet { transform: translateY(0); }
+.sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0.75rem auto 1.25rem; }
+.sheet-title { font-size: 1rem; font-weight: 800; margin-bottom: 1.25rem; }
+.sheet-footer { display: flex; gap: 0.6rem; margin-top: 1.25rem; justify-content: flex-end; }
+.toast { position: fixed; bottom: calc(1.5rem + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%) translateY(10px); background: #222; border: 1px solid #444; color: white; padding: 0.65rem 1.1rem; border-radius: 99px; font-size: 0.82rem; font-weight: 600; opacity: 0; transition: opacity 0.2s, transform 0.2s; z-index: 999; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { background: #1a3d28; border-color: var(--vert); color: #5dffa0; }
+.toast.error { background: #3d1a1a; border-color: var(--rouge); color: #ff8080; }
+.spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="header-title">🍎 Admin · La Pomme d'Adam</div>
+    <div class="header-sub" id="sync-status">Chargement…</div>
+  </div>
+  <button class="save-btn" id="save-btn" onclick="saveAll()" disabled>💾 Sauvegarder</button>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('agenda',this)">📅 Agenda</div>
+  <div class="tab" onclick="switchTab('horaires',this)">🕐 Horaires</div>
+</div>
+<div class="main">
+  <div class="panel active" id="panel-agenda">
+    <div class="section-hd" style="margin-top:0.25rem;">
+      <h2 id="ev-count-label">Événements</h2>
+      <button class="btn btn-or" onclick="openSheet()">+ Ajouter</button>
+    </div>
+    <div class="events-list" id="events-list"><div class="empty">Chargement…</div></div>
+  </div>
+  <div class="panel" id="panel-horaires">
+    <div class="section-hd" style="margin-top:0.25rem;">
+      <h2>Périodes d'ouverture</h2>
+      <button class="btn btn-or" onclick="addPeriode()">+ Période</button>
+    </div>
+    <div id="periodes-list"></div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="sheet-bd" onclick="sheetBdClick(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-title">Nouvel événement</div>
+    <div class="form">
+      <div class="fg-row">
+        <div class="fg"><label>Date *</label><input type="date" id="ev-date"></div>
+        <div class="fg"><label>Créneau</label><input type="text" id="ev-creneau" placeholder="21h30"></div>
+      </div>
+      <div class="fg"><label>Titre *</label><input type="text" id="ev-titre" placeholder="Karaoké Night"></div>
+      <div class="fg"><label>Description</label><textarea id="ev-texte" placeholder="Détails…"></textarea></div>
+      <div class="fg"><label>Image (fichier dans images/)</label><input type="text" id="ev-image" placeholder="karaoke.jpg"></div>
+    </div>
+    <div class="sheet-footer">
+      <button class="btn btn-ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn btn-or" onclick="saveEvent()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let events=[],eventSha=null,periodes=[],horSha=null,editIdx=-1,dirty=false;
+const JOURS_FR=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+const JOURS_NOMS=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const JOURS_VALS=[1,2,3,4,5,6,0];
+const MOIS_FR=['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+
+async function init(){
+  try{ await Promise.all([loadEvents(),loadHoraires()]); setStatus('Synchronisé ✓'); document.getElementById('save-btn').disabled=false; }
+  catch(e){ setStatus('Erreur de chargement'); toast('Erreur : '+e.message,'error'); }
+}
+function setStatus(m){ document.getElementById('sync-status').textContent=m; }
+function markDirty(){ dirty=true; document.getElementById('save-btn').disabled=false; }
+
+async function apiGet(ep){ const r=await fetch('/api/'+ep); if(!r.ok) throw new Error('Lecture impossible'); return r.json(); }
+async function apiPut(ep,content,sha){
+  const r=await fetch('/api/'+ep,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content,sha})});
+  if(!r.ok){ const e=await r.json(); throw new Error(e.error||'Erreur sauvegarde'); }
+  return r.json();
+}
+
+const CSV_HEADERS=['date','créneau','titre','texte','image'];
+
+async function loadEvents(){ const {content,sha}=await apiGet('events'); eventSha=sha; events=parseCSV(content); renderEvents(); }
+
+function parseCSV(text){
+  if(!text||!text.trim()) return [];
+  let t=text; if(t.charCodeAt(0)===0xFEFF) t=t.slice(1);
+  const lines=t.trim().split(/\r?\n/); if(lines.length<2) return [];
+  const headers=lines[0].split(',').map(h=>h.trim()); const rows=[];
+  for(let i=1;i<lines.length;i++){
+    const line=lines[i].trim(); if(!line) continue;
+    const vals=parseCSVLine(line); const row={};
+    headers.forEach((h,idx)=>row[h]=(vals[idx]||'').trim());
+    if(row.titre) rows.push(row);
+  }
+  return rows;
+}
+function parseCSVLine(line){
+  const vals=[];let cur='',inQ=false;
+  for(let c=0;c<line.length;c++){
+    const ch=line[c];
+    if(ch==='"'&&!inQ){inQ=true;continue;}
+    if(ch==='"'&&inQ&&line[c+1]==='"'){cur+='"';c++;continue;}
+    if(ch==='"'&&inQ){inQ=false;continue;}
+    if(ch===','&&!inQ){vals.push(cur);cur='';continue;}
+    cur+=ch;
+  }
+  vals.push(cur); return vals;
+}
+function eventsToCSV(){
+  const rows=events.map(ev=>CSV_HEADERS.map(h=>{const v=ev[h]||'';return(v.includes(',')||v.includes('"')||v.includes('\n'))?'"'+v.replace(/"/g,'""')+'"':v;}).join(','));
+  return '\uFEFF'+CSV_HEADERS.join(',')+'\n'+rows.join('\n');
+}
+function formatDate(d){ if(!d) return ''; const dt=new Date(d+'T12:00:00'); return JOURS_FR[dt.getDay()]+' '+dt.getDate()+' '+MOIS_FR[dt.getMonth()]; }
+
+function renderEvents(){
+  const list=document.getElementById('events-list');
+  const sorted=[...events].map((e,i)=>({...e,_i:i})).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  document.getElementById('ev-count-label').textContent=events.length+' événement'+(events.length>1?'s':'');
+  if(!sorted.length){list.innerHTML='<div class="empty">Aucun événement · Appuyez sur + Ajouter</div>';return;}
+  list.innerHTML=sorted.map(ev=>`
+    <div class="event-item" onclick="editEvent(${ev._i})">
+      <div class="event-item-date">${formatDate(ev.date)}</div>
+      <div class="event-item-body">
+        <div class="event-item-titre">${ev.titre}${ev.image?' 🖼':''}</div>
+        <div class="event-item-meta">${ev['créneau']||'Créneau non défini'}</div>
+      </div>
+      <button class="event-item-del" onclick="event.stopPropagation();deleteEvent(${ev._i})">🗑</button>
+    </div>`).join('');
+}
+
+function openSheet(idx=-1){
+  editIdx=idx;
+  document.getElementById('sheet-title').textContent=idx<0?'Nouvel événement':'Modifier';
+  const ev=idx>=0?events[idx]:{};
+  document.getElementById('ev-date').value=ev.date||'';
+  document.getElementById('ev-creneau').value=ev['créneau']||'';
+  document.getElementById('ev-titre').value=ev.titre||'';
+  document.getElementById('ev-texte').value=ev.texte||'';
+  document.getElementById('ev-image').value=ev.image||'';
+  document.getElementById('sheet-bd').classList.add('open');
+}
+function closeSheet(){document.getElementById('sheet-bd').classList.remove('open');}
+function sheetBdClick(e){if(e.target===document.getElementById('sheet-bd'))closeSheet();}
+
+function saveEvent(){
+  const date=document.getElementById('ev-date').value.trim();
+  const titre=document.getElementById('ev-titre').value.trim();
+  if(!date||!titre){toast('Date et titre obligatoires','error');return;}
+  const ev={date,'créneau':document.getElementById('ev-creneau').value.trim(),titre,texte:document.getElementById('ev-texte').value.trim(),image:document.getElementById('ev-image').value.trim()};
+  if(editIdx>=0) events[editIdx]=ev; else events.push(ev);
+  closeSheet(); renderEvents(); markDirty(); toast('Événement enregistré');
+}
+function editEvent(i){openSheet(i);}
+function deleteEvent(i){if(!confirm('Supprimer ?')) return; events.splice(i,1); renderEvents(); markDirty(); toast('Supprimé');}
+
+async function loadHoraires(){
+  const {content,sha}=await apiGet('horaires'); horSha=sha;
+  try{ const p=JSON.parse(content); periodes=Array.isArray(p)?p:[]; }catch{periodes=[];}
+  if(!periodes.length) periodes=[{label:'Saison 2025',dateDebut:'2025-04-15',dateFin:'2025-10-15',note:'',jours:[1,2,3,4,5,6,0],services:[{nom:'Buffet petit-déjeuner',debut:'08:00',fin:'12:00'},{nom:'Déjeuner',debut:'12:00',fin:'14:00'},{nom:'Dîner',debut:'19:00',fin:'22:00'}]}];
+  renderPeriodes();
+}
+
+function renderPeriodes(){
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('periodes-list').innerHTML=periodes.map((p,pi)=>{
+    const isActive=(!p.dateDebut||today>=p.dateDebut)&&(!p.dateFin||today<=p.dateFin);
+    const joursHTML=JOURS_VALS.map((v,ji)=>`<div class="jour-tog ${p.jours.includes(v)?'on':''}" onclick="toggleJour(${pi},${v})">${JOURS_NOMS[ji]}</div>`).join('');
+    const svcHTML=p.services.map((s,si)=>`
+      <div class="service-row">
+        <input type="text" value="${s.nom}" placeholder="Service" oninput="updateService(${pi},${si},'nom',this.value)">
+        <div class="time-range">
+          <input type="time" value="${s.debut}" oninput="updateService(${pi},${si},'debut',this.value)">
+          <span class="time-sep">→</span>
+          <input type="time" value="${s.fin}" oninput="updateService(${pi},${si},'fin',this.value)">
+        </div>
+        <button class="btn btn-rouge btn-sm" onclick="removeService(${pi},${si})">✕</button>
+      </div>`).join('');
+    return `<div class="periode ${isActive?'active-p':''}">
+      <div class="periode-hd">
+        <span class="${isActive?'badge-active':'badge-inactive'}">${isActive?'⚡ Active':'📅 Période'}</span>
+        <button class="btn btn-rouge btn-sm" onclick="removePeriode(${pi})">Supprimer</button>
+      </div>
+      <div class="form" style="gap:0.6rem;">
+        <div class="fg-row">
+          <div class="fg"><label>Libellé</label><input type="text" value="${p.label}" oninput="updatePeriode(${pi},'label',this.value)"></div>
+          <div class="fg"><label>Note</label><input type="text" value="${p.note||''}" placeholder="Fermé le lundi…" oninput="updatePeriode(${pi},'note',this.value)"></div>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><label>Début validité</label><input type="date" value="${p.dateDebut||''}" oninput="updatePeriode(${pi},'dateDebut',this.value)"></div>
+          <div class="fg"><label>Fin validité</label><input type="date" value="${p.dateFin||''}" oninput="updatePeriode(${pi},'dateFin',this.value)"></div>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <label>Jours d'ouverture</label>
+      <div class="jours-grid">${joursHTML}</div>
+      <div class="sep"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+        <label>Services</label>
+        <button class="btn btn-ghost btn-sm" onclick="addService(${pi})">+ Service</button>
+      </div>
+      <div class="services">${svcHTML}</div>
+    </div>`;
+  }).join('')||'<div class="empty">Aucune période</div>';
+}
+
+function updatePeriode(pi,k,v){periodes[pi][k]=v;markDirty();}
+function toggleJour(pi,v){const i=periodes[pi].jours.indexOf(v);if(i>=0)periodes[pi].jours.splice(i,1);else periodes[pi].jours.push(v);renderPeriodes();markDirty();}
+function addService(pi){periodes[pi].services.push({nom:'',debut:'08:00',fin:'22:00'});renderPeriodes();markDirty();}
+function removeService(pi,si){periodes[pi].services.splice(si,1);renderPeriodes();markDirty();}
+function updateService(pi,si,k,v){periodes[pi].services[si][k]=v;markDirty();}
+function addPeriode(){periodes.push({label:'Nouvelle période',dateDebut:'',dateFin:'',note:'',jours:[1,2,3,4,5,6,0],services:[{nom:'Déjeuner',debut:'12:00',fin:'14:00'},{nom:'Dîner',debut:'19:00',fin:'22:00'}]});renderPeriodes();markDirty();}
+function removePeriode(pi){if(!confirm('Supprimer ?')) return;periodes.splice(pi,1);renderPeriodes();markDirty();}
+
+async function saveAll(){
+  const btn=document.getElementById('save-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Sauvegarde…';
+  setStatus('Sauvegarde en cours…');
+  try{
+    await Promise.all([apiPut('events',eventsToCSV(),eventSha),apiPut('horaires',JSON.stringify(periodes,null,2),horSha)]);
+    const [ev,hor]=await Promise.all([apiGet('events'),apiGet('horaires')]);
+    eventSha=ev.sha; horSha=hor.sha; dirty=false;
+    setStatus('Sauvegardé ✓ · Déploiement dans ~30s');
+    toast('✅ Sauvegardé ! Site mis à jour dans ~30s','success');
+    setTimeout(()=>setStatus('Synchronisé ✓'),10000);
+  }catch(e){ toast('❌ '+e.message,'error'); setStatus('Erreur de sauvegarde'); }
+  btn.disabled=false; btn.innerHTML='💾 Sauvegarder';
+}
+
+function switchTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active'); document.getElementById('panel-'+id).classList.add('active');
+}
+
+let toastTimer;
+function toast(msg,type=''){
+  const el=document.getElementById('toast'); el.textContent=msg;
+  el.className='toast show'+(type?' '+type:'');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
+init();
+</script>
+</body>
+</html>
