@@ -938,7 +938,7 @@ function mapLevantEvent(ev) {
 async function loadLevantEvents() {
   const statusEl = document.getElementById('agenda-status');
   try {
-    const res = await fetch('https://levant.news/api/evenements?etablissement=POMME');
+    const res = await fetch('https://levant-news.vercel.app/api/evenements?etablissement=POMME');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     const rows = json.evenements ?? [];
@@ -1169,7 +1169,7 @@ async function loadHoraires() {
 
 
 loadHoraires();
-loadCSVEvents();
+loadLevantEvents();
 
 
 </script>
