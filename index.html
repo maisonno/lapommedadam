@@ -762,22 +762,7 @@ body {
   <p class="section-label">Quand nous trouver</p>
   <h2 class="section-title">Horaires</h2>
   <div class="divider"></div>
-  <div class="horaire-card actif">
-    <div class="horaire-badge">⚡ Saison 2025</div>
-    <div class="horaire-row">
-      <span class="horaire-service">Buffet petit-déjeuner</span>
-      <span class="horaire-heure">8h00 – 12h00</span>
-    </div>
-    <div class="horaire-row">
-      <span class="horaire-service">Déjeuner</span>
-      <span class="horaire-heure">12h00 – 14h00</span>
-    </div>
-    <div class="horaire-row">
-      <span class="horaire-service">Dîner</span>
-      <span class="horaire-heure">19h00 – 22h00</span>
-    </div>
-    <p class="horaire-note">Horaires et jours d'ouverture susceptibles de changer</p>
-  </div>
+  <div id="horaires-container"><p style="font-size:0.8rem;color:rgba(255,255,255,0.3);text-align:center;">Chargement…</p></div>
 </section>
 
 <!-- ══════ AGENDA ══════ -->
@@ -805,8 +790,10 @@ body {
     <button class="modal-close" id="modal-close">&#10005;</button>
     <div class="modal-img-wrap" id="modal-img-wrap"></div>
     <div class="modal-body">
+      <div id="modal-badge" style="display:none;font-size:0.7rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:1px solid;border-radius:99px;padding:0.2rem 0.75rem;margin-bottom:0.5rem;"></div>
       <div class="modal-titre" id="modal-titre"></div>
       <div class="modal-meta" id="modal-meta"></div>
+      <div id="modal-lieu" style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-top:0.25rem;"></div>
       <div class="modal-desc" id="modal-desc"></div>
     </div>
   </div>
@@ -911,105 +898,62 @@ const CULINAIRE_WEEKLY = [
   { id: 'moules', type: 'weekly', dow: 6, titre: 'Moules-frites',    emoji: '🦪', heure: 'Soir', desc: 'Moules fraîches cuites sauce maison, accompagnées de frites dorées à souhait.', categorie: 'culinaire', image: null },
 ];
 
-// ── Événements Levant.news chargés depuis l'API Glide ──
-let EVENTS_GLIDE = [];
+// ── Catégories Levant.news ──
+const CAT_EMOJI = {
+  CONCERT:'🎵', SOIREE:'🎉', SPORT:'🏃', EXPO:'🖼️',
+  MARCHE:'🛍️', SPECTACLE:'🎭', INFO:'ℹ️', INFOCRITIQUE:'⚠️',
+  BAL:'💃', BRUNCH:'☕', ACTIVITE:'🧘', CHANT:'🎤',
+  SERVICE_RELIGIEUX:'⛪', BANQUET:'🍽️', JEU:'🎲', CUISINE:'👨‍🍳',
+};
+// Couleur de bordure gauche pour les cards
+const CAT_COLOR = {
+  CONCERT:'#a855f7', SOIREE:'#6366f1', SPORT:'#22c55e', EXPO:'#f59e0b',
+  MARCHE:'#f97316', SPECTACLE:'#ec4899', INFO:'#3b82f6', INFOCRITIQUE:'#ef4444',
+  BAL:'#d946ef', BRUNCH:'#eab308', ACTIVITE:'#14b8a6', CHANT:'#f43f5e',
+  SERVICE_RELIGIEUX:'#78716c', BANQUET:'#84cc16', JEU:'#06b6d4', CUISINE:'#10b981',
+};
 
-// Colonnes à mapper — à affiner après avoir vu la vraie réponse JSON
-function mapGlideRow(row) {
-  // On tente les noms de colonnes les plus probables
-  const titre  = row['Titre'] || row['titre'] || row['Name'] || row['name'] || row['Nom'] || '';
-  const desc   = row['Description'] || row['description'] || row['Texte'] || row['texte'] || '';
-  const date   = row['Date'] || row['date'] || row['Début'] || row['debut'] || '';
-  const heure  = row['Heure'] || row['heure'] || row['Horaire'] || '';
-  const image  = row['Image'] || row['image'] || row['Photo'] || row['photo'] || null;
-  const orga   = row['Organisateur'] || row['organisateur'] || row['Organisation'] || '';
-  const tags   = (row['Tags'] || row['tags'] || row['Categorie'] || row['categorie'] || '').toLowerCase();
+// ── Événements Levant.news ──
+let EVENTS_LEVANT = [];
 
-  if (!titre || !date) return null;
-
-  // Filtre organisateur — on ne garde que POMME et COMITEFETE
-  const orgaCode = (row['Organisateur'] || row['organisateur'] || row['Organisation'] || row['CodeOrga'] || row['orga'] || '').toUpperCase().trim();
-  if (!['POMME', 'COMITEFETE'].includes(orgaCode)) return null;
-
-  // Catégorie selon organisateur
-  let categorie = 'animation';
-  if (orgaCode === 'COMITEFETE') categorie = 'fete';
-
-  // Emoji heuristique
-  let emoji = '🎉';
-  if (titre.toLowerCase().includes('karaoké') || titre.toLowerCase().includes('karaoke')) emoji = '🎤';
-  if (titre.toLowerCase().includes('quiz')) emoji = '🧠';
-  if (titre.toLowerCase().includes('bal') || titre.toLowerCase().includes('feu')) emoji = '🎆';
-  if (titre.toLowerCase().includes('concert') || titre.toLowerCase().includes('musique')) emoji = '🎵';
-  if (titre.toLowerCase().includes('marché')) emoji = '🛍️';
-  if (titre.toLowerCase().includes('apéro') || titre.toLowerCase().includes('apero')) emoji = '🥂';
-
-  // Normaliser la date en YYYY-MM-DD
-  let dateNorm = '';
-  if (date) {
-    const d = new Date(date);
-    if (!isNaN(d)) dateNorm = d.toISOString().slice(0, 10);
-    else dateNorm = date.slice(0, 10);
-  }
-
+function mapLevantEvent(ev) {
+  const catCode = ev.categorie?.code || '';
   return {
-    id: 'glide_' + (row.$rowID || Math.random().toString(36).slice(2)),
-    type: 'once',
-    date: dateNorm,
-    titre,
-    emoji,
-    heure: heure || '',
-    desc,
-    categorie,
-    image: image || null,
+    id:        'levant_' + ev.id,
+    type:      'once',
+    date:      ev.date_debut,
+    titre:     ev.titre,
+    emoji:     CAT_EMOJI[catCode] || '📅',
+    heure:     ev.heure || '',
+    desc:      ev.complement || '',
+    categorie: 'levant',
+    catCode,
+    catNom:    ev.categorie?.nom || '',
+    image:     ev.affiche_url || null,
+    lieu:      ev.lieu?.nom || null,
+    organisateur: ev.organisateur?.nom || null,
   };
 }
 
-async function loadGlideEvents() {
+async function loadLevantEvents() {
   const statusEl = document.getElementById('agenda-status');
   try {
-    const res = await fetch('https://api.glideapp.io/api/function/queryTables', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer 46f34137-620c-4152-af35-7afaa9fd3996'
-      },
-      body: JSON.stringify({
-        appID: '25OwRlcVU8HgB8AmYqM0',
-        queries: [{
-          tableName: 'native-table-Uhh3u60XySV9SkYUuMUG',
-          utc: true
-        }]
-      })
-    });
-
-    if (!res.ok) {
-      console.warn('Glide API HTTP', res.status);
-      if (statusEl) statusEl.textContent = '';
-      return;
-    }
-
+    const res = await fetch('https://levant.news/api/evenements?etablissement=POMME');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
-    console.log('Glide raw response:', JSON.stringify(json).slice(0, 500));
-
-    // Structure attendue : [{ rows: [...] }]
-    const rows = (json[0] && json[0].rows) ? json[0].rows : (Array.isArray(json) ? json : []);
-    console.log('Glide rows count:', rows.length);
-    if (rows.length > 0) console.log('Première ligne keys:', Object.keys(rows[0]));
-
-    EVENTS_GLIDE = rows.map(mapGlideRow).filter(Boolean);
-    console.log('Événements mappés:', EVENTS_GLIDE.length);
-
+    const rows = json.evenements ?? [];
+    EVENTS_LEVANT = rows.map(mapLevantEvent);
+    console.log('Levant.news events:', EVENTS_LEVANT.length);
   } catch (err) {
-    console.warn('Glide API erreur:', err.message);
+    console.warn('Levant.news API erreur:', err.message);
   }
   if (statusEl) statusEl.textContent = '';
   renderEvents();
 }
 
-// EVENTS_DB = fusion culinaire + glide (calculé à la volée)
+// Fusion culinaire + CSV + Levant.news
 function getEventsDB() {
-  return [...CULINAIRE_WEEKLY, ...EVENTS_GLIDE];
+  return [...CULINAIRE_WEEKLY, ...EVENTS_CSV, ...EVENTS_LEVANT];
 }
 
 const JOURS_LONG  = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
@@ -1067,6 +1011,9 @@ function renderEvents() {
   events.forEach(ev => {
     const card = document.createElement('div');
     card.className = 'event-card ' + ev.categorie;
+    if (ev.catCode && CAT_COLOR[ev.catCode]) {
+      card.style.borderLeftColor = CAT_COLOR[ev.catCode];
+    }
     card.dataset.evId = ev.id + ev._date.getTime();
 
     const JOURS_COURT = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
@@ -1109,9 +1056,37 @@ function openModal(ev, dateLabel) {
     imgWrap.innerHTML = ev.emoji;
   }
 
+  // Titre
   document.getElementById('modal-titre').textContent = ev.titre;
-  document.getElementById('modal-meta').textContent  = dateLabel + ' · ' + ev.heure;
-  document.getElementById('modal-desc').textContent  = ev.desc || '';
+
+  // Badge catégorie (Levant.news)
+  const badgeEl = document.getElementById('modal-badge');
+  if (badgeEl) {
+    if (ev.catNom) {
+      badgeEl.textContent = ev.catNom;
+      badgeEl.style.display = 'inline-block';
+      badgeEl.style.borderColor = (CAT_COLOR[ev.catCode] || '#666');
+      badgeEl.style.color = (CAT_COLOR[ev.catCode] || '#aaa');
+    } else {
+      badgeEl.style.display = 'none';
+    }
+  }
+
+  // Meta : date · heure
+  let meta = dateLabel;
+  if (ev.heure) meta += ' · ' + ev.heure;
+  document.getElementById('modal-meta').textContent = meta;
+
+  // Lieu / organisateur
+  const lieuEl = document.getElementById('modal-lieu');
+  if (lieuEl) {
+    const lieuText = ev.lieu || (ev.organisateur !== 'La Pomme d'Adam' ? ev.organisateur : null);
+    lieuEl.textContent = lieuText ? '📍 ' + lieuText : '';
+    lieuEl.style.display = lieuText ? 'block' : 'none';
+  }
+
+  // Description
+  document.getElementById('modal-desc').textContent = ev.desc || '';
 
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1136,6 +1111,63 @@ document.getElementById('next-week').addEventListener('click', () => {
   renderEvents();
 });
 
+// ── Horaires dynamiques depuis horaires.json ──
+async function loadHoraires() {
+  const container = document.getElementById('horaires-container');
+  try {
+    const res = await fetch('horaires.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const periodes = await res.json();
+
+    const today = new Date().toISOString().slice(0, 10);
+    // Trouver la période active
+    const active = periodes.find(p =>
+      (!p.dateDebut || today >= p.dateDebut) && (!p.dateFin || today <= p.dateFin)
+    );
+
+    if (!active) {
+      container.innerHTML = '<p style="font-size:0.85rem;color:rgba(255,255,255,0.4);text-align:center;padding:1rem 0;">Fermé actuellement · Réouverture prochainement</p>';
+      return;
+    }
+
+    const JOURS_NOMS = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+    const joursOuverts = active.jours.map(d => JOURS_NOMS[d]).join(', ');
+
+    const servicesHTML = active.services.map(s => {
+      const debut = s.debut.replace(':', 'h').replace(/^0/, '');
+      const fin   = s.fin.replace(':', 'h').replace(/^0/, '');
+      return '<div class="horaire-row">' +
+        '<span class="horaire-service">' + s.nom + '</span>' +
+        '<span class="horaire-heure">' + debut + ' – ' + fin + '</span>' +
+        '</div>';
+    }).join('');
+
+    container.innerHTML =
+      '<div class="horaire-card actif">' +
+        '<div class="horaire-badge">⚡ ' + active.label + '</div>' +
+        (active.jours.length < 7
+          ? '<p style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">' + joursOuverts + '</p>'
+          : '') +
+        servicesHTML +
+        '<p class="horaire-note">' + (active.note || 'Horaires et jours d'ouverture susceptibles de changer') + '</p>' +
+      '</div>';
+
+  } catch(err) {
+    console.warn('Horaires non chargés:', err.message);
+    // Fallback statique
+    container.innerHTML =
+      '<div class="horaire-card actif">' +
+        '<div class="horaire-badge">⚡ En saison</div>' +
+        '<div class="horaire-row"><span class="horaire-service">Buffet petit-déjeuner</span><span class="horaire-heure">8h00 – 12h00</span></div>' +
+        '<div class="horaire-row"><span class="horaire-service">Déjeuner</span><span class="horaire-heure">12h00 – 14h00</span></div>' +
+        '<div class="horaire-row"><span class="horaire-service">Dîner</span><span class="horaire-heure">19h00 – 22h00</span></div>' +
+        '<p class="horaire-note">Horaires et jours d'ouverture susceptibles de changer</p>' +
+      '</div>';
+  }
+}
+
+
+loadHoraires();
 loadCSVEvents();
 
 
