@@ -952,6 +952,7 @@ async function loadLevantEvents() {
 }
 
 // Fusion culinaire + CSV + Levant.news
+let EVENTS_CSV = [];
 function getEventsDB() {
   return [...CULINAIRE_WEEKLY, ...EVENTS_CSV, ...EVENTS_LEVANT];
 }
@@ -1161,7 +1162,7 @@ async function loadHoraires() {
         '<div class="horaire-row"><span class="horaire-service">Buffet petit-déjeuner</span><span class="horaire-heure">8h00 – 12h00</span></div>' +
         '<div class="horaire-row"><span class="horaire-service">Déjeuner</span><span class="horaire-heure">12h00 – 14h00</span></div>' +
         '<div class="horaire-row"><span class="horaire-service">Dîner</span><span class="horaire-heure">19h00 – 22h00</span></div>' +
-        '<p class="horaire-note">Horaires et jours d'ouverture susceptibles de changer</p>' +
+        '<p class="horaire-note">Horaires et jours d\'ouverture susceptibles de changer</p>' +
       '</div>';
   }
 }
