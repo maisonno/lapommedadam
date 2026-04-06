@@ -1080,7 +1080,7 @@ function openModal(ev, dateLabel) {
   // Lieu / organisateur
   const lieuEl = document.getElementById('modal-lieu');
   if (lieuEl) {
-    const lieuText = ev.lieu || (ev.organisateur !== 'La Pomme d'Adam' ? ev.organisateur : null);
+    const lieuText = ev.lieu || (ev.organisateur !== "La Pomme d'Adam" ? ev.organisateur : null);
     lieuEl.textContent = lieuText ? '📍 ' + lieuText : '';
     lieuEl.style.display = lieuText ? 'block' : 'none';
   }
