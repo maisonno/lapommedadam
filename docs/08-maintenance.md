@@ -23,14 +23,9 @@ Cas typiques :
 2. Dans `/admin`, modifier l'événement et saisir le nom du fichier dans le champ "Image"
 3. Sauvegarder
 
-### Mettre à jour le programme culinaire fixe
+### Mettre à jour le programme culinaire (burger/aïoli/moules)
 
-Le programme culinaire (burger/aïoli/moules) est codé en dur dans `index.html`. Pour le modifier :
-
-1. Ouvrir `index.html` dans un éditeur de texte
-2. Trouver le tableau `CULINAIRE_WEEKLY`
-3. Modifier les entrées (jour `dow`, titre, description, emoji)
-4. Pusher sur GitHub
+Le programme culinaire n'est plus codé en dur. Il se gère désormais comme les autres événements, via l'agenda (`/admin` ou Levant.news). Pour ajouter ou modifier un rendez-vous culinaire récurrent, créer l'événement correspondant dans l'agenda.
 
 ### Modifier les boutons CTA (click & collect, réservation)
 
@@ -85,4 +80,4 @@ Les URLs sont dans `index.html`, dans la section Hero et la section Commander/R�
 | Sécurisation de `/admin` | 🔓 Non sécurisé | Envisager une protection par mot de passe ou IP si nécessaire |
 | PWA / icône écran d'accueil | ⏳ Non implémenté | Ajouter `manifest.json` + service worker |
 | Upload d'images depuis l'admin | ⏳ Non implémenté | Nécessite une Vercel Function supplémentaire |
-| Programme culinaire éditable | ⏳ Codé en dur | Migrer vers le CSV ou un fichier JSON dédié |
+| Programme culinaire éditable | ✅ Géré via l'agenda | Migré : burger/aïoli/moules se saisissent comme des événements |

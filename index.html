@@ -891,13 +891,6 @@ body {
 
 
 <script>
-// ── Programme culinaire fixe (local) ──
-const CULINAIRE_WEEKLY = [
-  { id: 'burger', type: 'weekly', dow: 2, titre: 'Burger du moment', emoji: '🍔', heure: 'Soir', desc: 'Notre burger maison servi avec frites maison. Un classique qui change selon les arrivages.', categorie: 'culinaire', image: null },
-  { id: 'aioli',  type: 'weekly', dow: 5, titre: 'Aïoli provençal',  emoji: '🧄', heure: 'Soir', desc: "La grande tradition du vendredi. Légumes de saison, morue, œuf dur, le tout nappé d'un aïoli maison.", categorie: 'culinaire', image: null },
-  { id: 'moules', type: 'weekly', dow: 6, titre: 'Moules-frites',    emoji: '🦪', heure: 'Soir', desc: 'Moules fraîches cuites sauce maison, accompagnées de frites dorées à souhait.', categorie: 'culinaire', image: null },
-];
-
 // ── Catégories Levant.news ──
 const CAT_EMOJI = {
   CONCERT:'🎵', SOIREE:'🎉', SPORT:'🏃', EXPO:'🖼️',
@@ -951,10 +944,10 @@ async function loadLevantEvents() {
   renderEvents();
 }
 
-// Fusion culinaire + CSV + Levant.news
+// Fusion CSV + Levant.news
 let EVENTS_CSV = [];
 function getEventsDB() {
-  return [...CULINAIRE_WEEKLY, ...EVENTS_CSV, ...EVENTS_LEVANT];
+  return [...EVENTS_CSV, ...EVENTS_LEVANT];
 }
 
 const JOURS_LONG  = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
