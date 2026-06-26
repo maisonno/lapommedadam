@@ -928,18 +928,31 @@ function mapLevantEvent(ev) {
   };
 }
 
-async function loadLevantEvents() {
-  const statusEl = document.getElementById('agenda-status');
+// Établissements Levant.news affichés dans l'agenda :
+// POMME = La Pomme d'Adam · COMITEFETE = Comité des Fêtes de la place Durville · PLACE_DURVILLE = Place du village
+const LEVANT_CODES = ['POMME', 'COMITEFETE', 'PLACE_DURVILLE'];
+
+async function fetchLevant(code) {
   try {
-    const res = await fetch('https://levant-news.vercel.app/api/evenements?etablissement=POMME');
+    const res = await fetch('https://levant-news.vercel.app/api/evenements?etablissement=' + code);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
-    const rows = json.evenements ?? [];
-    EVENTS_LEVANT = rows.map(mapLevantEvent);
-    console.log('Levant.news events:', EVENTS_LEVANT.length);
+    return json.evenements ?? [];
   } catch (err) {
-    console.warn('Levant.news API erreur:', err.message);
+    console.warn('Levant.news API erreur (' + code + '):', err.message);
+    return [];
   }
+}
+
+async function loadLevantEvents() {
+  const statusEl = document.getElementById('agenda-status');
+  const lists = await Promise.all(LEVANT_CODES.map(fetchLevant));
+  // Fusion des établissements + déduplication par id (un événement peut remonter dans plusieurs appels)
+  const seen = new Set();
+  EVENTS_LEVANT = lists.flat()
+    .filter(ev => ev && ev.id && !seen.has(ev.id) && seen.add(ev.id))
+    .map(mapLevantEvent);
+  console.log('Levant.news events:', EVENTS_LEVANT.length);
   if (statusEl) statusEl.textContent = '';
   renderEvents();
 }
