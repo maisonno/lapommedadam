@@ -34,11 +34,22 @@ Encodage : **UTF-8 avec BOM** (pour compatibilité Numbers/Excel).
 
 ### 2. API Levant.news
 
-Source principale des événements ponctuels. Appel au chargement de la page :
+Source principale des événements ponctuels. Au chargement, l'agenda interroge l'API pour **plusieurs établissements** (constante `LEVANT_CODES` dans `index.html`), puis fusionne les résultats en dédupliquant par `id` :
 
 ```javascript
-fetch('https://levant-news.vercel.app/api/evenements?etablissement=POMME')
+const LEVANT_CODES = ['POMME', 'COMITEFETE', 'PLACE_DURVILLE'];
+LEVANT_CODES.map(code =>
+  fetch('https://levant-news.vercel.app/api/evenements?etablissement=' + code)
+);
 ```
+
+| Code | Établissement |
+|------|---------------|
+| `POMME` | La Pomme d'Adam |
+| `COMITEFETE` | Comité des Fêtes de la place Durville |
+| `PLACE_DURVILLE` | Place du village |
+
+Chaque appel renvoie les événements (publiés, à venir) où l'établissement est **organisateur ou lieu**. Pour afficher d'autres établissements, ajouter leur code à `LEVANT_CODES`.
 
 > ⚠️ L'URL pointe actuellement sur l'environnement de développement Levant.news (`levant-news.vercel.app`). Elle devra être mise à jour vers `levant.news` lors du passage en production de Levant.news.
 
