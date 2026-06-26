@@ -31,11 +31,13 @@ Bouton **+ Ajouter** → bottom sheet avec le formulaire :
 
 | Champ | Obligatoire | Format |
 |-------|-------------|--------|
-| Date | ✅ | Sélecteur de date natif |
+| Date | ✅ | Sélecteur de date natif (date de début si l'événement est hebdomadaire) |
 | Créneau | — | Texte libre (`21h30`, `Soir`…) |
 | Titre | ✅ | Texte |
 | Description | — | Texte multilignes |
 | Image | — | Nom de fichier dans `images/` (ex: `karaoke.jpg`) |
+| Hebdomadaire | — | Case à cocher : l'événement se répète chaque semaine le même jour que la date |
+| Date de fin de récurrence | — | Visible si « Hebdomadaire » coché. Fin de la répétition ; vide = sans fin |
 
 ### Supprimer un événement
 Bouton 🗑 à droite de chaque ligne. Confirmation demandée.

@@ -944,10 +944,81 @@ async function loadLevantEvents() {
   renderEvents();
 }
 
-// Fusion CSV + Levant.news
+// ── Événements depuis events.csv ──
 let EVENTS_CSV = [];
+
+function csvIsHebdo(v) {
+  const s = (v || '').toString().trim().toLowerCase();
+  return s === '1' || s === 'oui' || s === 'true' || s === 'vrai' || s === 'x';
+}
+
+function parseCSVLine(line) {
+  const vals = []; let cur = '', inQ = false;
+  for (let c = 0; c < line.length; c++) {
+    const ch = line[c];
+    if (ch === '"' && !inQ) { inQ = true; continue; }
+    if (ch === '"' && inQ && line[c+1] === '"') { cur += '"'; c++; continue; }
+    if (ch === '"' && inQ) { inQ = false; continue; }
+    if (ch === ',' && !inQ) { vals.push(cur); cur = ''; continue; }
+    cur += ch;
+  }
+  vals.push(cur); return vals;
+}
+
+function mapCSVEvent(row) {
+  const date = (row.date || '').trim();
+  const base = {
+    id:        'csv_' + date + '_' + (row.titre || '').slice(0, 16),
+    titre:     row.titre || '',
+    emoji:     '📅',
+    heure:     (row['créneau'] || '').trim(),
+    desc:      (row.texte || '').trim(),
+    categorie: 'animation',
+    image:     (row.image || '').trim() ? ('images/' + row.image.trim()) : null,
+  };
+  if (csvIsHebdo(row.hebdo)) {
+    const d = new Date(date + 'T12:00:00');
+    return { ...base, type: 'weekly', dow: d.getDay(), dateDebut: date, dateFin: (row.dateFin || '').trim() || null };
+  }
+  return { ...base, type: 'once', date };
+}
+
+function parseEventsCSV(text) {
+  if (!text || !text.trim()) return [];
+  let t = text; if (t.charCodeAt(0) === 0xFEFF) t = t.slice(1);
+  const lines = t.trim().split(/\r?\n/); if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim());
+  const out = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim(); if (!line) continue;
+    const vals = parseCSVLine(line); const row = {};
+    headers.forEach((h, idx) => row[h] = (vals[idx] || '').trim());
+    if (!row.titre || !row.date) continue;
+    out.push(mapCSVEvent(row));
+  }
+  return out;
+}
+
+async function loadCSVEvents() {
+  try {
+    const res = await fetch('events.csv', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    EVENTS_CSV = parseEventsCSV(await res.text());
+    console.log('events.csv:', EVENTS_CSV.length);
+  } catch (err) {
+    console.warn('events.csv non chargé:', err.message);
+  }
+  renderEvents();
+}
+
+// Fusion CSV + Levant.news
 function getEventsDB() {
   return [...EVENTS_CSV, ...EVENTS_LEVANT];
+}
+
+// Date locale au format YYYY-MM-DD (évite le décalage de fuseau de toISOString)
+function localISO(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 
 const JOURS_LONG  = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
@@ -977,8 +1048,11 @@ function getEventsForWeek(monday) {
     day.setDate(monday.getDate() + i);
     const dateStr = day.toISOString().slice(0,10);
 
+    const localStr = localISO(day);
     getEventsDB().forEach(ev => {
       if (ev.type === 'weekly' && ev.dow === day.getDay()) {
+        if (ev.dateDebut && localStr < ev.dateDebut) return;
+        if (ev.dateFin && localStr > ev.dateFin) return;
         events.push({ ...ev, _date: new Date(day) });
       } else if (ev.type === 'once' && ev.date === dateStr) {
         events.push({ ...ev, _date: new Date(day) });
@@ -1162,6 +1236,7 @@ async function loadHoraires() {
 
 
 loadHoraires();
+loadCSVEvents();
 loadLevantEvents();
 
 
