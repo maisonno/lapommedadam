@@ -47,6 +47,10 @@ label { font-size: 0.68rem; font-weight: 700; color: var(--text-dim); letter-spa
 input, textarea { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 0.65rem 0.75rem; font-size: 0.88rem; font-family: inherit; width: 100%; -webkit-appearance: none; }
 input:focus, textarea:focus { outline: none; border-color: var(--or); }
 textarea { resize: vertical; min-height: 80px; }
+input[type=checkbox] { width: auto; -webkit-appearance: checkbox; appearance: checkbox; accent-color: var(--or); margin: 0; cursor: pointer; }
+.check-row { flex-direction: row; align-items: center; gap: 0.5rem; }
+.check-row label { text-transform: none; letter-spacing: 0; font-size: 0.85rem; color: var(--text); cursor: pointer; }
+.hint { font-size: 0.72rem; color: var(--text-dim); margin-top: -0.2rem; }
 .periode { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 0.75rem; }
 .periode.active-p { border-color: rgba(240,192,64,0.4); }
 .periode-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; }
@@ -117,6 +121,15 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="fg"><label>Titre *</label><input type="text" id="ev-titre" placeholder="Karaoké Night"></div>
       <div class="fg"><label>Description</label><textarea id="ev-texte" placeholder="Détails…"></textarea></div>
       <div class="fg"><label>Image (fichier dans images/)</label><input type="text" id="ev-image" placeholder="karaoke.jpg"></div>
+      <div class="fg check-row">
+        <input type="checkbox" id="ev-hebdo" onchange="toggleHebdo()">
+        <label for="ev-hebdo">↻ Événement hebdomadaire (se répète chaque semaine)</label>
+      </div>
+      <div class="fg" id="datefin-wrap" style="display:none;">
+        <label>Date de fin de récurrence</label>
+        <input type="date" id="ev-datefin">
+        <p class="hint">Le rendez-vous se répète le même jour de la semaine jusqu'à cette date. Laisser vide = sans fin.</p>
+      </div>
     </div>
     <div class="sheet-footer">
       <button class="btn btn-ghost" onclick="closeSheet()">Annuler</button>
@@ -147,7 +160,8 @@ async function apiPut(ep,content,sha){
   return r.json();
 }
 
-const CSV_HEADERS=['date','créneau','titre','texte','image'];
+const CSV_HEADERS=['date','créneau','titre','texte','image','hebdo','dateFin'];
+function isHebdo(v){const s=(v||'').toString().trim().toLowerCase();return s==='1'||s==='oui'||s==='true'||s==='vrai'||s==='x';}
 
 async function loadEvents(){ const {content,sha}=await apiGet('events'); eventSha=sha; events=parseCSV(content); renderEvents(); }
 
@@ -192,7 +206,7 @@ function renderEvents(){
       <div class="event-item-date">${formatDate(ev.date)}</div>
       <div class="event-item-body">
         <div class="event-item-titre">${ev.titre}${ev.image?' 🖼':''}</div>
-        <div class="event-item-meta">${ev['créneau']||'Créneau non défini'}</div>
+        <div class="event-item-meta">${isHebdo(ev.hebdo)?'↻ Hebdo'+(ev.dateFin?' → '+ev.dateFin:'')+(ev['créneau']?' · '+ev['créneau']:''):(ev['créneau']||'Créneau non défini')}</div>
       </div>
       <button class="event-item-del" onclick="event.stopPropagation();deleteEvent(${ev._i})">🗑</button>
     </div>`).join('');
@@ -207,8 +221,12 @@ function openSheet(idx=-1){
   document.getElementById('ev-titre').value=ev.titre||'';
   document.getElementById('ev-texte').value=ev.texte||'';
   document.getElementById('ev-image').value=ev.image||'';
+  document.getElementById('ev-hebdo').checked=isHebdo(ev.hebdo);
+  document.getElementById('ev-datefin').value=ev.dateFin||'';
+  toggleHebdo();
   document.getElementById('sheet-bd').classList.add('open');
 }
+function toggleHebdo(){ document.getElementById('datefin-wrap').style.display=document.getElementById('ev-hebdo').checked?'flex':'none'; }
 function closeSheet(){document.getElementById('sheet-bd').classList.remove('open');}
 function sheetBdClick(e){if(e.target===document.getElementById('sheet-bd'))closeSheet();}
 
@@ -216,7 +234,8 @@ function saveEvent(){
   const date=document.getElementById('ev-date').value.trim();
   const titre=document.getElementById('ev-titre').value.trim();
   if(!date||!titre){toast('Date et titre obligatoires','error');return;}
-  const ev={date,'créneau':document.getElementById('ev-creneau').value.trim(),titre,texte:document.getElementById('ev-texte').value.trim(),image:document.getElementById('ev-image').value.trim()};
+  const hebdo=document.getElementById('ev-hebdo').checked;
+  const ev={date,'créneau':document.getElementById('ev-creneau').value.trim(),titre,texte:document.getElementById('ev-texte').value.trim(),image:document.getElementById('ev-image').value.trim(),hebdo:hebdo?'1':'',dateFin:hebdo?document.getElementById('ev-datefin').value.trim():''};
   if(editIdx>=0) events[editIdx]=ev; else events.push(ev);
   closeSheet(); renderEvents(); markDirty(); toast('Événement enregistré');
 }

@@ -8,22 +8,27 @@ L'agenda fusionne deux sources, affichées ensemble semaine par semaine.
 
 ### 1. Événements CSV (`events.csv`)
 
-> ⚠️ Cette source est actuellement déclarée mais non chargée en production (remplacée par Levant.news). Elle reste dans le code pour usage futur ou fallback.
+Saisis via `/admin` et chargés sur le site public (`fetch('events.csv')`, fonction `loadCSVEvents`). Cette source gère les événements **ponctuels** comme **hebdomadaires** (récurrents).
 
 Format du fichier :
 
 ```
-date,créneau,titre,texte,image
-2025-07-14,21h00,Bal du 14 juillet,"Description de l'événement",bal14juillet.jpg
+date,créneau,titre,texte,image,hebdo,dateFin
+2026-07-14,21h00,Bal du 14 juillet,"Description de l'événement",bal14juillet.jpg,,
+2026-04-30,Soir,Burger du moment,"Notre burger maison",,1,2026-08-31
 ```
 
 | Colonne | Format | Obligatoire |
 |---------|--------|-------------|
-| `date` | `YYYY-MM-DD` ou `DD/MM/YYYY` | ✅ |
+| `date` | `YYYY-MM-DD` (pour un événement hebdo, c'est la **date de début**) | ✅ |
 | `créneau` | texte libre (`21h30`, `Soir`…) | — |
 | `titre` | texte | ✅ |
 | `texte` | texte (guillemets si virgule) | — |
 | `image` | nom de fichier dans `images/` | — |
+| `hebdo` | `1` = se répète chaque semaine ; vide = événement ponctuel | — |
+| `dateFin` | `YYYY-MM-DD` : fin de la récurrence (uniquement si `hebdo`) ; vide = sans fin | — |
+
+**Récurrence :** un événement avec `hebdo=1` apparaît chaque semaine le **même jour de la semaine que sa `date` de début**, de `date` jusqu'à `dateFin` incluse (ou indéfiniment si `dateFin` est vide). Exemple : pour un burger tous les mardis, choisir un mardi comme `date`.
 
 Encodage : **UTF-8 avec BOM** (pour compatibilité Numbers/Excel).
 
