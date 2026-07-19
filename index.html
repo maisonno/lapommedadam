@@ -1059,15 +1059,15 @@ function getEventsForWeek(monday) {
   for (let i = 0; i < 7; i++) {
     const day = new Date(monday);
     day.setDate(monday.getDate() + i);
-    const dateStr = day.toISOString().slice(0,10);
-
+    // Date locale (YYYY-MM-DD) — évite le décalage d'un jour de toISOString() en UTC
     const localStr = localISO(day);
+
     getEventsDB().forEach(ev => {
       if (ev.type === 'weekly' && ev.dow === day.getDay()) {
         if (ev.dateDebut && localStr < ev.dateDebut) return;
         if (ev.dateFin && localStr > ev.dateFin) return;
         events.push({ ...ev, _date: new Date(day) });
-      } else if (ev.type === 'once' && ev.date === dateStr) {
+      } else if (ev.type === 'once' && ev.date === localStr) {
         events.push({ ...ev, _date: new Date(day) });
       }
     });
