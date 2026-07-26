@@ -18,10 +18,16 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  if (!GITHUB_TOKEN) return res.status(500).json({ error: 'GITHUB_TOKEN absent de la configuration Vercel' });
+
   // ── GET : lire le CSV ──
   if (req.method === 'GET') {
     const r = await fetch(API_BASE, { headers });
-    if (!r.ok) return res.status(r.status).json({ error: 'GitHub read error' });
+    if (!r.ok) {
+      let githubMessage = '';
+      try { githubMessage = (await r.json()).message || ''; } catch {}
+      return res.status(r.status).json({ error: 'GitHub read error', status: r.status, githubMessage });
+    }
     const data = await r.json();
     const content = Buffer.from(data.content, 'base64').toString('utf-8');
     return res.status(200).json({ content, sha: data.sha });
