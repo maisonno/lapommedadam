@@ -153,7 +153,7 @@ async function init(){
 function setStatus(m){ document.getElementById('sync-status').textContent=m; }
 function markDirty(){ dirty=true; document.getElementById('save-btn').disabled=false; }
 
-async function apiGet(ep){ const r=await fetch('/api/'+ep); if(!r.ok) throw new Error('Lecture impossible'); return r.json(); }
+async function apiGet(ep){ const r=await fetch('/api/'+ep); if(!r.ok){ let d={}; try{d=await r.json();}catch{} throw new Error(d.error?(d.error+(d.status?' ('+d.status+(d.githubMessage?' : '+d.githubMessage:'')+')':'')):'Lecture impossible ('+r.status+')'); } return r.json(); }
 async function apiPut(ep,content,sha){
   const r=await fetch('/api/'+ep,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content,sha})});
   if(!r.ok){ const e=await r.json(); throw new Error(e.error||'Erreur sauvegarde'); }
