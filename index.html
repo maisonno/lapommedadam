@@ -713,6 +713,26 @@ body {
 }
 
 
+/* ══════ RÉVEILLON (accueil) ══════ */
+.reveillon-card {
+  background: linear-gradient(160deg, rgba(26,79,160,0.22) 0%, rgba(0,0,0,0.35) 100%);
+  border: 1px solid rgba(240,192,64,0.35);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.1rem 1.15rem;
+}
+.reveillon-head {
+  font-size: 0.82rem; font-weight: 700; color: var(--or);
+  text-align: center; margin-bottom: 0.95rem; letter-spacing: 0.02em;
+}
+.reveillon-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.15rem; }
+.reveillon-list li { display: flex; gap: 0.75rem; align-items: baseline; }
+.rv-jour {
+  flex-shrink: 0; width: 54px; font-size: 0.72rem; font-weight: 800;
+  color: var(--or); text-transform: uppercase; letter-spacing: 0.03em;
+}
+.rv-desc { font-size: 0.86rem; line-height: 1.45; color: var(--gris-clair); }
+.rv-desc strong { color: #fff; font-weight: 700; }
+.rv-desc em { color: rgba(255,255,255,0.6); font-style: italic; }
 </style>
 </head>
 <body>
@@ -735,6 +755,24 @@ body {
         💬 WhatsApp · 04 83 99 46 26
       </a>
     </div>
+  </div>
+</section>
+
+<!-- ══════ RÉVEILLON 2027 ══════ -->
+<div class="section-sep"></div>
+<section class="section" id="reveillon">
+  <p class="section-label">Fêtes de fin d'année</p>
+  <h2 class="section-title">Réveillon 2027</h2>
+  <div class="divider"></div>
+  <div class="reveillon-card">
+    <div class="reveillon-head">🎆 Du mercredi 30 décembre au samedi 2 janvier</div>
+    <ul class="reveillon-list">
+      <li><span class="rv-jour">Mer 30</span><span class="rv-desc"><strong>Burger &amp; Karaoké</strong></span></li>
+      <li><span class="rv-jour">Jeu 31</span><span class="rv-desc"><strong>Soirée St Sylvestre</strong> — Grand buffet de Réveillon &amp; soirée dansante avec DJ No Sleep.<br><em>Thème : Tout est faux !</em></span></li>
+      <li><span class="rv-jour">Ven 1er</span><span class="rv-desc"><strong>Dîner spectacle</strong> — Miss Martini et ses danseurs.</span></li>
+      <li><span class="rv-jour">Sam 2</span><span class="rv-desc"><strong>Loto &amp; Jeux</strong> — Loto de la SNCM puis soirée jeux &amp; Pinsa night.</span></li>
+    </ul>
+    <a href="/reveillon" class="btn btn-or" style="width:100%;">🥂 Réserver le Réveillon</a>
   </div>
 </section>
 
