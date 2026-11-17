@@ -109,6 +109,19 @@ body {
 .phone a { color: var(--or); text-decoration: none; font-weight: 700; }
 
 .footer { text-align: center; margin-top: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.35); }
+
+.hero .poster {
+  width: 100%; display: block; border-radius: var(--radius);
+  border: 1px solid rgba(240,192,64,0.25);
+  box-shadow: 0 10px 44px rgba(0,0,0,0.55);
+}
+.booking-frame {
+  width: 100%; background: #fff; border-radius: var(--radius);
+  overflow: hidden; border: 1px solid rgba(240,192,64,0.3); margin-bottom: 0.6rem;
+}
+.booking-frame iframe { width: 100%; height: 760px; border: 0; display: block; }
+.frame-fallback { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 1rem; }
+.frame-fallback a { color: var(--or); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -119,8 +132,7 @@ body {
   </div>
 
   <header class="hero">
-    <div class="script">Réveillon</div>
-    <div class="sub">La Pomme d'Adam · 2027</div>
+    <img src="images/reveillon-2027.webp" alt="Réveillon 2027 à La Pomme d'Adam — les réservations sont ouvertes" class="poster">
     <div class="dates">🎆 Du mercredi 30 décembre au samedi 2 janvier</div>
   </header>
 
@@ -159,11 +171,14 @@ body {
   </section>
 
   <!-- Réservation -->
-  <section class="cta-block">
+  <section class="cta-block" id="reserver">
     <h2>Réserver</h2>
-    <p>Places limitées pour le buffet du 31 (40 €) et le dîner spectacle du 1er (30 €). Réservez dès maintenant !</p>
+    <p>Places limitées pour le buffet du 31 (40 €) et le dîner spectacle du 1er (30 €). Réservez directement ci-dessous :</p>
+    <div class="booking-frame">
+      <iframe src="https://reservation.laddition.com/booking/lapomme" title="Réservation en ligne — La Pomme d'Adam" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <p class="frame-fallback">Le module ne s'affiche pas ? <a href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener">Ouvrir la réservation ↗</a></p>
     <a class="btn btn-or" href="https://wa.me/33483994626?text=Bonjour%2C%20je%20souhaite%20r%C3%A9server%20pour%20le%20R%C3%A9veillon%20%C3%A0%20La%20Pomme%20d'Adam." target="_blank" rel="noopener">💬 Réserver sur WhatsApp</a>
-    <a class="btn btn-bleu" href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener">📅 Réserver une table en ligne</a>
     <div class="phone">ou par téléphone : <a href="tel:+33483994626">04 83 99 46 26</a></div>
   </section>
 
