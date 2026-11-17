@@ -117,6 +117,24 @@ body {
 }
 .frame-fallback { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin: 0.1rem 0 1rem; }
 .frame-fallback a { color: var(--or); font-weight: 700; }
+
+.poster-link { display: block; }
+a.tag { text-decoration: none; cursor: pointer; transition: opacity 0.15s; }
+a.tag:active { opacity: 0.85; }
+.day-btn {
+  display: inline-block; margin-top: 0.9rem;
+  background: linear-gradient(135deg, var(--or) 0%, var(--or-doux) 100%);
+  color: #05080f; font-weight: 800; font-size: 0.86rem;
+  text-decoration: none; padding: 0.6rem 1.15rem; border-radius: 10px;
+  letter-spacing: 0.02em; transition: transform 0.15s, opacity 0.15s;
+}
+.day-btn:active { transform: scale(0.97); opacity: 0.9; }
+.no-resa {
+  display: inline-block; margin-top: 0.9rem;
+  font-size: 0.82rem; font-weight: 700; color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 99px; padding: 0.35rem 0.9rem;
+}
 </style>
 </head>
 <body>
@@ -127,7 +145,9 @@ body {
   </div>
 
   <header class="hero">
-    <img src="images/reveillon-2027.webp" alt="Réveillon 2027 à La Pomme d'Adam — les réservations sont ouvertes" class="poster">
+    <a href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener" class="poster-link" aria-label="Réserver en ligne sur L'Addition">
+      <img src="images/reveillon-2027.webp" alt="Réveillon 2027 à La Pomme d'Adam — les réservations sont ouvertes" class="poster">
+    </a>
     <div class="dates">🎆 Du mercredi 30 décembre au samedi 2 janvier</div>
   </header>
 
@@ -136,25 +156,28 @@ body {
     <div class="day-date">Mercredi 30</div>
     <div class="day-title">Burger &amp; Karaoké</div>
     <div class="line">Une soirée pour se mettre en jambes avant les festivités.</div>
+    <a class="day-btn" href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener">Réserver →</a>
   </section>
 
   <!-- Jeudi 31 -->
   <section class="day">
     <div class="day-date">Jeudi 31</div>
     <div class="day-title">Soirée St Sylvestre</div>
-    <div class="line"><span class="h">20h</span> · Grand buffet de Réveillon <span class="tag">40 € · sur réservation</span></div>
+    <div class="line"><span class="h">20h</span> · Grand buffet de Réveillon <a class="tag" href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener">40 € · sur réservation</a></div>
     <div class="line"><span class="h">22h30</span> · Soirée dansante avec DJ No Sleep</div>
     <div class="theme">
       <div class="t">Thème : Tout est faux !</div>
       <div class="list">Faux cuir, faux ongles, fausse fourrure, fausse moustache, faux Vuitton, faux départ, faux cul, faux sang, fausse note, faux tatouages, faux pas, faux témoin, fausses résolutions…</div>
     </div>
+    <a class="day-btn" href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener">Réserver →</a>
   </section>
 
   <!-- Vendredi 1er -->
   <section class="day">
     <div class="day-date">Vendredi 1er</div>
     <div class="day-title">Dîner spectacle</div>
-    <div class="line">Miss Martini et ses danseurs <span class="tag">30 € · résa méga recommandée</span></div>
+    <div class="line">Miss Martini et ses danseurs <a class="tag" href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener">30 € · résa méga recommandée</a></div>
+    <a class="day-btn" href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener">Réserver →</a>
   </section>
 
   <!-- Samedi 2 -->
@@ -163,16 +186,15 @@ body {
     <div class="day-title">Loto et Jeux</div>
     <div class="line"><span class="h">17h</span> · Le traditionnel Loto de la SNCM</div>
     <div class="line"><span class="h">20h</span> · Soirée Jeux de société et Pinsa night</div>
+    <div class="no-resa">Pas de réservation.</div>
   </section>
 
   <!-- Réservation -->
   <section class="cta-block" id="reserver">
     <h2>Réserver</h2>
-    <p>Places limitées pour le buffet du 31 (40 €) et le dîner spectacle du 1er (30 €).</p>
+    <p>Réservez en ligne pour le buffet du 31 (40 €) et le dîner spectacle du 1er (30 €). Pensez à choisir la date de votre soirée sur la page L'Addition.</p>
     <a class="btn btn-or" href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener">📅 Réserver en ligne</a>
-    <p class="frame-fallback">Sur la page L'Addition, sélectionnez la date souhaitée (ex. le 31 décembre).</p>
-    <a class="btn btn-bleu" href="https://wa.me/33483994626?text=Bonjour%2C%20je%20souhaite%20r%C3%A9server%20pour%20le%20R%C3%A9veillon%20%C3%A0%20La%20Pomme%20d'Adam." target="_blank" rel="noopener">💬 Réserver sur WhatsApp</a>
-    <div class="phone">ou par téléphone : <a href="tel:+33483994626">04 83 99 46 26</a></div>
+    <div class="phone">une question ? <a href="tel:+33483994626">04 83 99 46 26</a></div>
   </section>
 
   <div class="footer">La Pomme d'Adam · Place Durville, Héliopolis · Île du Levant</div>
