@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réveillon 2027 · La Pomme d'Adam</title>
+<meta name="description" content="Programme du Réveillon 2027 à La Pomme d'Adam, Île du Levant : Soirée St Sylvestre, dîner spectacle, loto et jeux. Réservations ouvertes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --noir: #05080f;
+  --bleu-roi: #1a4fa0;
+  --or: #f0c040;
+  --or-doux: #e8a820;
+  --gris-clair: #d8dde6;
+  --radius: 14px;
+}
+body {
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--gris-clair);
+  background:
+    radial-gradient(120% 420px at 50% -40px, rgba(240,192,64,0.18) 0%, rgba(240,192,64,0) 70%),
+    linear-gradient(180deg, #0a1428 0%, #070d1c 40%, #05080f 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%, 100% 100%;
+  min-height: 100svh;
+  padding: 0 1rem calc(2rem + env(safe-area-inset-bottom));
+  line-height: 1.6;
+}
+.wrap { max-width: 520px; margin: 0 auto; }
+
+.topbar { padding: 1rem 0 0.5rem; }
+.back {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  color: rgba(255,255,255,0.55); text-decoration: none;
+  font-size: 0.82rem; font-weight: 700;
+}
+.back:active { opacity: 0.7; }
+
+.hero { text-align: center; padding: 1.2rem 0 1.6rem; }
+.hero .script {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(3.4rem, 18vw, 5rem);
+  line-height: 0.95;
+  color: var(--or);
+  text-shadow: 0 2px 24px rgba(240,192,64,0.35);
+}
+.hero .sub {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: rgba(255,255,255,0.65);
+  margin-top: 0.6rem;
+}
+.hero .dates {
+  font-size: 0.88rem; color: var(--or); margin-top: 0.5rem; font-weight: 700;
+}
+
+.day {
+  background: linear-gradient(160deg, rgba(26,79,160,0.20) 0%, rgba(0,0,0,0.30) 100%);
+  border: 1px solid rgba(240,192,64,0.28);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.15rem 1.2rem;
+  margin-bottom: 1rem;
+}
+.day-date {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2rem; color: var(--or); line-height: 1; margin-bottom: 0.15rem;
+}
+.day-title { font-size: 1.15rem; font-weight: 900; color: #fff; margin-bottom: 0.55rem; }
+.line { font-size: 0.92rem; margin-bottom: 0.2rem; }
+.line .h { color: var(--or); font-weight: 700; }
+.tag {
+  display: inline-block; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.05em;
+  text-transform: uppercase; color: #05080f; background: var(--or);
+  border-radius: 99px; padding: 0.15rem 0.6rem; margin-left: 0.35rem; vertical-align: middle;
+}
+.theme {
+  margin-top: 0.75rem; padding-top: 0.75rem;
+  border-top: 1px dashed rgba(240,192,64,0.3);
+}
+.theme .t { font-weight: 900; color: #fff; }
+.theme .list { font-size: 0.88rem; color: rgba(255,255,255,0.72); font-style: italic; margin-top: 0.2rem; }
+
+.cta-block {
+  background: rgba(240,192,64,0.07);
+  border: 1px solid rgba(240,192,64,0.3);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.15rem;
+  margin-top: 1.5rem; text-align: center;
+}
+.cta-block h2 { font-size: 1.25rem; color: #fff; margin-bottom: 0.3rem; }
+.cta-block p { font-size: 0.86rem; color: rgba(255,255,255,0.6); margin-bottom: 1rem; }
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.9rem 1.4rem; border-radius: var(--radius);
+  font-family: 'Lato', sans-serif; font-size: 0.92rem; font-weight: 700;
+  text-decoration: none; letter-spacing: 0.02em; width: 100%;
+  transition: transform 0.15s, opacity 0.15s; border: none; cursor: pointer;
+  margin-bottom: 0.6rem;
+}
+.btn:active { transform: scale(0.98); opacity: 0.92; }
+.btn-or { background: linear-gradient(135deg, var(--or) 0%, var(--or-doux) 100%); color: #05080f; }
+.btn-bleu { background: linear-gradient(135deg, #2d6fd4 0%, var(--bleu-roi) 100%); color: #fff; }
+.btn-ghost { background: transparent; border: 1.5px solid rgba(240,192,64,0.5); color: var(--or); }
+.btn:last-child { margin-bottom: 0; }
+.phone { margin-top: 0.9rem; font-size: 0.82rem; color: rgba(255,255,255,0.55); }
+.phone a { color: var(--or); text-decoration: none; font-weight: 700; }
+
+.footer { text-align: center; margin-top: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.35); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <a class="back" href="/">← Retour à l'accueil</a>
+  </div>
+
+  <header class="hero">
+    <div class="script">Réveillon</div>
+    <div class="sub">La Pomme d'Adam · 2027</div>
+    <div class="dates">🎆 Du mercredi 30 décembre au samedi 2 janvier</div>
+  </header>
+
+  <!-- Mercredi 30 -->
+  <section class="day">
+    <div class="day-date">Mercredi 30</div>
+    <div class="day-title">Burger &amp; Karaoké</div>
+    <div class="line">Une soirée pour se mettre en jambes avant les festivités.</div>
+  </section>
+
+  <!-- Jeudi 31 -->
+  <section class="day">
+    <div class="day-date">Jeudi 31</div>
+    <div class="day-title">Soirée St Sylvestre</div>
+    <div class="line"><span class="h">20h</span> · Grand buffet de Réveillon <span class="tag">40 € · sur réservation</span></div>
+    <div class="line"><span class="h">22h30</span> · Soirée dansante avec DJ No Sleep</div>
+    <div class="theme">
+      <div class="t">Thème : Tout est faux !</div>
+      <div class="list">Faux cuir, faux ongles, fausse fourrure, fausse moustache, faux Vuitton, faux départ, faux cul, faux sang, fausse note, faux tatouages, faux pas, faux témoin, fausses résolutions…</div>
+    </div>
+  </section>
+
+  <!-- Vendredi 1er -->
+  <section class="day">
+    <div class="day-date">Vendredi 1er</div>
+    <div class="day-title">Dîner spectacle</div>
+    <div class="line">Miss Martini et ses danseurs <span class="tag">30 € · résa méga recommandée</span></div>
+  </section>
+
+  <!-- Samedi 2 -->
+  <section class="day">
+    <div class="day-date">Samedi 2</div>
+    <div class="day-title">Loto et Jeux</div>
+    <div class="line"><span class="h">17h</span> · Le traditionnel Loto de la SNCM</div>
+    <div class="line"><span class="h">20h</span> · Soirée Jeux de société et Pinsa night</div>
+  </section>
+
+  <!-- Réservation -->
+  <section class="cta-block">
+    <h2>Réserver</h2>
+    <p>Places limitées pour le buffet du 31 (40 €) et le dîner spectacle du 1er (30 €). Réservez dès maintenant !</p>
+    <a class="btn btn-or" href="https://wa.me/33483994626?text=Bonjour%2C%20je%20souhaite%20r%C3%A9server%20pour%20le%20R%C3%A9veillon%20%C3%A0%20La%20Pomme%20d'Adam." target="_blank" rel="noopener">💬 Réserver sur WhatsApp</a>
+    <a class="btn btn-bleu" href="https://reservation.laddition.com/booking/lapomme" target="_blank" rel="noopener">📅 Réserver une table en ligne</a>
+    <div class="phone">ou par téléphone : <a href="tel:+33483994626">04 83 99 46 26</a></div>
+  </section>
+
+  <div class="footer">La Pomme d'Adam · Place Durville, Héliopolis · Île du Levant</div>
+
+</div>
+</body>
+</html>
